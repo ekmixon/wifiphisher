@@ -65,10 +65,9 @@ class Victims():
         """Initialize the class."""
         if Victims.__instance:
             raise Exception("Error: Victims class is a singleton!")
-        else:
-            Victims.__instance = self
-            self.victims_dic = {}
-            self.url_file = open(constants.URL_TO_OS_FILE, "r")
+        Victims.__instance = self
+        self.victims_dic = {}
+        self.url_file = open(constants.URL_TO_OS_FILE, "r")
 
     def add_to_victim_dic(self, victim_obj):
         """Add new victim to the dictionary."""
@@ -82,24 +81,23 @@ class Victims():
         :rtype str
 
         """
-        mac_timestamp = {}
         sorted_mac_timestamp = []
         most_recent_dic = {}
-        max_victim_counter = 0
-        for value in list(self.victims_dic.values()):
-            mac_timestamp[value.vmac_address] = value.timestamp
+        mac_timestamp = {
+            value.vmac_address: value.timestamp
+            for value in list(self.victims_dic.values())
+        }
 
         sorted_mac_timestamp = sorted(list(mac_timestamp.items()),
                                       key=lambda p: float(p[1]))
 
-        for item in reversed(sorted_mac_timestamp):
+        for max_victim_counter, item in enumerate(reversed(sorted_mac_timestamp)):
             if max_victim_counter >= 5:
                 return most_recent_dic
             victim_obj = self.victims_dic[item[0]]
             victim_value = '\t' + victim_obj.ip_address + '\t' \
-                + victim_obj.vendor + '\t' + victim_obj.os
+                    + victim_obj.vendor + '\t' + victim_obj.os
             most_recent_dic[victim_obj.vmac_address] = victim_value
-            max_victim_counter += 1
         return most_recent_dic
 
     def associate_victim_ip_to_os(self, ip_address, url):

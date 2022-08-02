@@ -77,12 +77,11 @@ class MACMatcher(object):
 
         # convert mac address to same format as file
         # ex. 12:34:56:78:90:AB --> 123456
-        mac_identifier = mac_address.replace(':', '').upper()[0:6]
+        mac_identifier = mac_address.replace(':', '').upper()[:6]
 
         # try to find the vendor and if not found return unknown
         try:
-            vendor = self._mac_to_vendor[mac_identifier][0]
-            return vendor
+            return self._mac_to_vendor[mac_identifier][0]
         except KeyError:
             return "Unknown"
 
@@ -106,7 +105,7 @@ class MACMatcher(object):
 
         # convert mac address to same format as file
         # ex. 12:34:56:78:90:AB --> 123456
-        mac_identifier = mac_address.replace(':', '').upper()[0:6]
+        mac_identifier = mac_address.replace(':', '').upper()[:6]
 
         # check to see if vendor is available for the MAC address
         if mac_identifier in self._mac_to_vendor:
@@ -114,10 +113,7 @@ class MACMatcher(object):
             logo = self._mac_to_vendor[mac_identifier][1]
             logo_path = constants.LOGOS_DIR + logo
             # return logo name if it was provided otherwise return None
-            if logo:
-                return logo_path
-            else:
-                return None
+            return logo_path if logo else None
 
     def unbind(self):
         """

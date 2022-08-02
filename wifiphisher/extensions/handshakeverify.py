@@ -24,7 +24,7 @@ def get_process_result(command_string):
     return output
 
 def is_valid_handshake_capture(filename):
-    command = '/bin/cowpatty -c -r {}'.format(filename)
+    command = f'/bin/cowpatty -c -r {filename}'
     output = get_process_result(command)
     return ("Collected all necessary data" in output)
 
@@ -44,11 +44,12 @@ class Handshakeverify(object):
         return defaultdict(list)
 
     def send_output(self):
-        if self.key != "" and self.found:
-            return ["VALID KEY: " + self.key]
-        elif self.key != "" and not self.found:
-            return ["INVALID KEY ({})".format(self.key)]
-        return ["WAITING FOR WPA KEY POST (ESSID: {})".format(self.essid)]
+        if self.key != "":
+            if self.found:
+                return [f"VALID KEY: {self.key}"]
+            else:
+                return [f"INVALID KEY ({self.key})"]
+        return [f"WAITING FOR WPA KEY POST (ESSID: {self.essid})"]
 
     def on_exit(self):
         pass
@@ -57,11 +58,10 @@ class Handshakeverify(object):
     def psk_verify(self, *list_data):
         self.key = list_data[0]
 
-        keyfile = open(self.key_file_path, "w")
-        keyfile.write(self.key + "\n")
-        keyfile.close()
-        
-        command = '/bin/cowpatty -f "{}" -r "{}" -s "{}"'.format(self.key_file_path, self.capt_file, self.essid)
+        with open(self.key_file_path, "w") as keyfile:
+            keyfile.write(self.key + "\n")
+        command = f'/bin/cowpatty -f "{self.key_file_path}" -r "{self.capt_file}" -s "{self.essid}"'
+
 
         self.found = False
 
@@ -70,9 +70,7 @@ class Handshakeverify(object):
         if "The PSK is" in output:
             self.found = True
 
-        if self.key != "" and self.found:
-            return 'success'
-        elif self.key != "" and not self.found:
-            return 'fail'
+        if self.key != "":
+            return 'success' if self.found else 'fail'
         return 'unknown'
 

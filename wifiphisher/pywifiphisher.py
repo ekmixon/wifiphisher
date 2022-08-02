@@ -266,15 +266,23 @@ def set_channel_range():
     region = time.tzname[time.daylight]
 
     if "JST" in region:
-        print('[' + G + '+' + W + "] " + \
-              "JST timezone detected. " + \
-              "Setting channel range to 1-14")
+        print(
+            (
+                (f'[{G}+{W}] ' + "JST timezone detected. ")
+                + "Setting channel range to 1-14"
+            )
+        )
+
         universal.ALL_2G_CHANNELS = list(range(1,15))
         return
 
-    print('[' + G + '+' + W + "] " + \
-          "Timezone detected. " + \
-          "Setting channel range to 1-13")
+    print(
+        (
+            (f'[{G}+{W}] ' + "Timezone detected. ")
+            + "Setting channel range to 1-13"
+        )
+    )
+
     universal.ALL_2G_CHANNELS = list(range(1,14))
     return
 
@@ -316,8 +324,7 @@ def kill_interfering_procs():
             # kill all the processes name equal to interfering_proc
             if interfering_proc in proc.decode('utf-8'):
                 pid = int(proc.split(None, 1)[0])
-                print('[' + G + '+' + W + "] Sending SIGKILL to " +\
-                    interfering_proc)
+                print((f'[{G}+{W}] Sending SIGKILL to ' + interfering_proc))
                 os.kill(pid, signal.SIGKILL)
 
 
@@ -334,10 +341,10 @@ class WifiphisherEngine:
 
     def stop(self):
         if DEV:
-            print("[" + G + "+" + W + "] Show your support!")
-            print("[" + G + "+" + W + "] Follow us: https://twitter.com/wifiphisher")
-            print("[" + G + "+" + W + "] Like us: https://www.facebook.com/Wifiphisher")
-        print("[" + G + "+" + W + "] Captured credentials:")
+            print(f"[{G}+{W}] Show your support!")
+            print(f"[{G}+{W}] Follow us: https://twitter.com/wifiphisher")
+            print(f"[{G}+{W}] Like us: https://www.facebook.com/Wifiphisher")
+        print(f"[{G}+{W}] Captured credentials:")
         for cred in phishinghttp.creds:
             logger.info("Credentials: %s", cred)
             print(cred)
@@ -357,7 +364,7 @@ class WifiphisherEngine:
         if os.path.isfile('/tmp/wifiphisher-webserver.tmp'):
             os.remove('/tmp/wifiphisher-webserver.tmp')
 
-        print('[' + R + '!' + W + '] Closing')
+        print(f'[{R}!{W}] Closing')
         sys.exit(0)
 
     def start(self):

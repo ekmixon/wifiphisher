@@ -22,9 +22,7 @@ def is_deauth_frame(packet):
     :return: True if the frame is belonged to deauth module
     :rtype: bool
     """
-    if packet.subtype == 10 or packet.subtype == 12:
-        return True
-    return False
+    return packet.subtype in [10, 12]
 
 class Deauth(object):
     """
@@ -47,7 +45,7 @@ class Deauth(object):
         self._should_continue = True
         self._data = data
         # the bssids having the same ESSID
-        self._deauth_bssids = dict()
+        self._deauth_bssids = {}
         # channel mapping to the frames list
         self._packets_to_send = defaultdict(list)
 
@@ -146,7 +144,7 @@ class Deauth(object):
         :rtype: tuple
         """
 
-        packets_to_send = list()
+        packets_to_send = []
 
         # basic malformed frame check
         try:
@@ -196,8 +194,7 @@ class Deauth(object):
         if bssid not in self._deauth_bssids:
             return self._packets_to_send
 
-        clients = self._add_clients(sender, receiver, bssid)
-        if clients:
+        if clients := self._add_clients(sender, receiver, bssid):
             self._observed_clients.add(clients[0])
             packets_to_send += clients[1]
             logger.info("Client with BSSID %s is now getting deauthenticated", clients[0])
@@ -291,11 +288,11 @@ class Deauth(object):
             return [self._data.target_ap_channel]
 
         if self._data.target_ap_bssid and not self._data.args.deauth_essid\
-                and not self._data.args.channel_monitor:
+                    and not self._data.args.channel_monitor:
             return [self._data.target_ap_channel]
 
         if self._data.args.deauth_channels and \
-           len(self._data.args.deauth_channels) > 0:
+               len(self._data.args.deauth_channels) > 0:
             return list(map(str, self._data.args.deauth_channels))
 
         return list(map(str, universal.ALL_2G_CHANNELS))

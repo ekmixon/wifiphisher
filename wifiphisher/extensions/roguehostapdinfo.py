@@ -79,10 +79,7 @@ class Roguehostapdinfo(object):
             mac_list = []
             ssid_list = []
         # remove the one not in the current associated list
-        pop_macs = []
-        for mac in self._mac2ssid_dict:
-            if mac not in mac_list:
-                pop_macs.append(mac)
+        pop_macs = [mac for mac in self._mac2ssid_dict if mac not in mac_list]
         for key in pop_macs:
             self._mac2ssid_dict.pop(key)
         # add new associated victims to the dictionary
@@ -93,11 +90,29 @@ class Roguehostapdinfo(object):
         for mac, ssid in macssid_pairs:
 
             if ssid == self._data.target_ap_essid:
-                outputstr = "Victim " + mac + " probed for WLAN with ESSID: '" + ssid + "' (Evil Twin)"
+                outputstr = (
+                    f"Victim {mac}"
+                    + " probed for WLAN with ESSID: '"
+                    + ssid
+                    + "' (Evil Twin)"
+                )
+
             elif ssid not in self._known_beacon_ssids:
-                outputstr = "Victim " + mac + " probed for WLAN with ESSID: '" + ssid + "' (KARMA)"
+                outputstr = (
+                    f"Victim {mac}"
+                    + " probed for WLAN with ESSID: '"
+                    + ssid
+                    + "' (KARMA)"
+                )
+
             else:
-                outputstr = "Victim " + mac + " probed for WLAN with ESSID: '" + ssid + "' (Known Beacons)"
+                outputstr = (
+                    f"Victim {mac}"
+                    + " probed for WLAN with ESSID: '"
+                    + ssid
+                    + "' (Known Beacons)"
+                )
+
             info.append(outputstr)
         return info
 

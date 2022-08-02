@@ -392,7 +392,7 @@ class TestNetworkManager(unittest.TestCase):
         """
         interface_name = 'eth0'
         actual = self.network_manager.is_interface_valid(interface_name, mode="internet")
-        message = "Failed to validate a valid interface " + interface_name
+        message = f"Failed to validate a valid interface {interface_name}"
 
         self.assertTrue(actual, message)
 
@@ -1219,16 +1219,10 @@ class TestNetworkManager(unittest.TestCase):
         pyric.iswireless.return_value = True
 
         def get_card_side_effect(value):
-            if value == "wlan0":
-                return card0
-            else:
-                return card1
+            return card0 if value == "wlan0" else card1
 
         def devmodes_side_effect(card):
-            if card.phy == "phy0":
-                return ["managed"]
-            else:
-                return ["monitor", "AP"]
+            return ["managed"] if card.phy == "phy0" else ["monitor", "AP"]
 
         pyric.getcard.side_effect = get_card_side_effect
         pyric.devmodes.side_effect = devmodes_side_effect
@@ -1254,16 +1248,10 @@ class TestNetworkManager(unittest.TestCase):
         pyric.iswireless.return_value = True
 
         def get_card_side_effect(value):
-            if value == "wlan0":
-                return card0
-            else:
-                return card1
+            return card0 if value == "wlan0" else card1
 
         def devmodes_side_effect(card):
-            if card.phy == "phy0":
-                return ["AP"]
-            else:
-                return ["monitor"]
+            return ["AP"] if card.phy == "phy0" else ["monitor"]
 
         pyric.getcard.side_effect = get_card_side_effect
         pyric.devmodes.side_effect = devmodes_side_effect
@@ -1289,16 +1277,10 @@ class TestNetworkManager(unittest.TestCase):
         pyric.iswireless.return_value = True
 
         def get_card_side_effect(value):
-            if value == "wlan0":
-                return card0
-            else:
-                return card1
+            return card0 if value == "wlan0" else card1
 
         def devmodes_side_effect(card):
-            if card.phy == "phy0":
-                return ["AP"]
-            else:
-                return ["monitor"]
+            return ["AP"] if card.phy == "phy0" else ["monitor"]
 
         pyric.getcard.side_effect = get_card_side_effect
         pyric.devmodes.side_effect = devmodes_side_effect
@@ -1332,7 +1314,7 @@ class TestIsWirelessInterface(unittest.TestCase):
         interface = 'eth0'
         is_wireless = interfaces.is_wireless_interface(interface)
         message = interface +\
-            " Shows interface is wireless adapter when it is not"
+                " Shows interface is wireless adapter when it is not"
         self.assertFalse(is_wireless, message)
 
     @mock.patch("wifiphisher.common.interfaces.pyw")

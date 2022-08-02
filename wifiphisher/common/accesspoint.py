@@ -56,11 +56,11 @@ class AccessPoint(object):
 
         with open(self.dns_conf_path, 'a+') as dhcpconf:
             if self.internet_interface:
-                dhcpconf.write("server=%s" % (constants.PUBLIC_DNS, ))
+                dhcpconf.write(f"server={constants.PUBLIC_DNS}")
             else:
                 dhcpconf.write("address=/google.com/172.217.5.78\n")
                 dhcpconf.write("address=/clients3.google.com/172.217.11.174\n")
-                dhcpconf.write("address=/#/%s " % (constants.NETWORK_GW_IP, ))
+                dhcpconf.write(f"address=/#/{constants.NETWORK_GW_IP} ")
         # catch the exception if dnsmasq is not installed
         try:
             subprocess.Popen(
@@ -68,8 +68,7 @@ class AccessPoint(object):
                 stdout=subprocess.PIPE,
                 stderr=constants.DN)
         except OSError:
-            print("[{}!{}] dnsmasq is not installed!".format(
-                constants.R, constants.W))
+            print(f"[{constants.R}!{constants.W}] dnsmasq is not installed!")
             raise Exception
 
         subprocess.Popen(
@@ -91,10 +90,10 @@ class AccessPoint(object):
         proc = subprocess.check_output(['ifconfig', str(self.interface)])
         if constants.NETWORK_GW_IP not in proc.decode('utf-8'):
             return False
-        subprocess.call(('route add -net %s netmask %s gw %s' %
-                         (constants.NETWORK_IP, constants.NETWORK_MASK,
-                          constants.NETWORK_GW_IP)),
-                        shell=True)
+        subprocess.call(
+            f'route add -net {constants.NETWORK_IP} netmask {constants.NETWORK_MASK} gw {constants.NETWORK_GW_IP}',
+            shell=True,
+        )
 
     def start(self, disable_karma=False):
         """Start the softAP."""
@@ -125,13 +124,9 @@ class AccessPoint(object):
                 raise Exception
             except BaseException:
                 print(
-                    "[{}!{}] Roguehostapd is not installed in the system! Please install"
-                    " roguehostapd manually (https://github.com/wifiphisher/roguehostapd)"
-                    " and rerun the script. Otherwise, you can run the tool with the"
-                    " --force-hostapd option to use hostapd but please note that using"
-                    " Wifiphisher with hostapd instead of roguehostapd will turn off many"
-                    " significant features of the tool.".format(
-                        constants.R, constants.W))
+                    f"[{constants.R}!{constants.W}] Roguehostapd is not installed in the system! Please install roguehostapd manually (https://github.com/wifiphisher/roguehostapd) and rerun the script. Otherwise, you can run the tool with the --force-hostapd option to use hostapd but please note that using Wifiphisher with hostapd instead of roguehostapd will turn off many significant features of the tool."
+                )
+
                 # just raise exception when hostapd is not installed
                 raise Exception
         else:
@@ -144,16 +139,15 @@ class AccessPoint(object):
                     stderr=constants.DN)
             except OSError:
                 print(
-                    "[{}!{}] hostapd is not installed in the system! Please download it"
-                    " using your favorite package manager (e.g. apt-get install hostapd) and "
-                    "rerun the script.".format(constants.R, constants.W))
+                    f"[{constants.R}!{constants.W}] hostapd is not installed in the system! Please download it using your favorite package manager (e.g. apt-get install hostapd) and rerun the script."
+                )
+
                 # just raise exception when hostapd is not installed
                 raise Exception
 
             time.sleep(2)
             if self.hostapd_object.poll() is not None:
-                print("[{}!{}] hostapd failed to lunch!".format(
-                    constants.R, constants.W))
+                print(f"[{constants.R}!{constants.W}] hostapd failed to lunch!")
                 raise Exception
 
     def on_exit(self):

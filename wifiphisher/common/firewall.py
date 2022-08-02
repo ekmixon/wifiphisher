@@ -14,12 +14,12 @@ class Fw():
     def nat(internal_interface, external_interface):
         # type: (str, str) -> None
         """Do NAT."""
-        execute_commands([
-            "iptables -t nat -A POSTROUTING -o {} -j MASQUERADE".format(
-                external_interface),
-            "iptables -A FORWARD -i {} -o {} -j ACCEPT".format(
-                internal_interface, external_interface)
-        ])
+        execute_commands(
+            [
+                f"iptables -t nat -A POSTROUTING -o {external_interface} -j MASQUERADE",
+                f"iptables -A FORWARD -i {internal_interface} -o {external_interface} -j ACCEPT",
+            ]
+        )
 
     @staticmethod
     def clear_rules():
@@ -40,16 +40,14 @@ class Fw():
             * HTTPS (Port 443)
             * DNS (Port 53)
         """
-        execute_commands([
-            "iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT "
-            "--to-destination {}:{}".format(NETWORK_GW_IP, PORT),
-            "iptables -t nat -A PREROUTING -p udp --dport 53 -j DNAT "
-            "--to-destination {}:{}".format(NETWORK_GW_IP, 53),
-            "iptables -t nat -A PREROUTING -p tcp --dport 53 -j DNAT "
-            "--to-destination {}:{}".format(NETWORK_GW_IP, 53),
-            "iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT "
-            "--to-destination {}:{}".format(NETWORK_GW_IP, SSL_PORT)
-        ])
+        execute_commands(
+            [
+                f"iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination {NETWORK_GW_IP}:{PORT}",
+                f"iptables -t nat -A PREROUTING -p udp --dport 53 -j DNAT --to-destination {NETWORK_GW_IP}:53",
+                f"iptables -t nat -A PREROUTING -p tcp --dport 53 -j DNAT --to-destination {NETWORK_GW_IP}:53",
+                f"iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination {NETWORK_GW_IP}:{SSL_PORT}",
+            ]
+        )
 
     def on_exit(self):
         # type: () -> None

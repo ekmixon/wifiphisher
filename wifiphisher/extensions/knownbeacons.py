@@ -48,7 +48,7 @@ class Knownbeacons(object):
         :rtype: list
         """
 
-        beacons = list()
+        beacons = []
         essid = str()
         bssid = self.data.rogue_ap_mac
 
@@ -101,14 +101,15 @@ class Knownbeacons(object):
         if (time.time() - self._starttime > constants.KB_INTERVAL):
             # Do a list shift
             self._full_pkt_list = self._full_pkt_list[constants.KB_BUCKET_SIZE:] + \
-                                    self._full_pkt_list[:constants.KB_BUCKET_SIZE]
+                                        self._full_pkt_list[:constants.KB_BUCKET_SIZE]
             self._starttime = time.time()
             first_essid = self._full_pkt_list[0][dot11.Dot11Elt].info.decode("utf8")
             last_essid = self._full_pkt_list[constants.KB_BUCKET_SIZE-1][dot11.Dot11Elt].info.decode("utf8")
 
-            self._msg.append("Sending %s known beacons (%s ... %s)" % \
-                            (str(constants.KB_BUCKET_SIZE), first_essid, \
-                            last_essid))
+            self._msg.append(
+                f"Sending {str(constants.KB_BUCKET_SIZE)} known beacons ({first_essid} ... {last_essid})"
+            )
+
 
         self._packets_to_send["*"] = self._full_pkt_list[:constants.KB_BUCKET_SIZE]
         return self._packets_to_send
@@ -125,9 +126,7 @@ class Knownbeacons(object):
             clutters
         """
 
-        if self._msg:
-            return self._msg
-        return ["Sending known beacons..."]
+        return self._msg or ["Sending known beacons..."]
 
     def send_channels(self):
         """

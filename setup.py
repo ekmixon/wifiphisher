@@ -82,9 +82,9 @@ def check_required_library(libname, libraries=None, include_dir=None):
     :rtype: bool
     """
     build_success = True
-    tmp_dir = tempfile.mkdtemp(prefix='tmp_' + libname + '_')
-    bin_file_name = os.path.join(tmp_dir, 'test_' + libname)
-    file_name = bin_file_name + '.c'
+    tmp_dir = tempfile.mkdtemp(prefix=f'tmp_{libname}_')
+    bin_file_name = os.path.join(tmp_dir, f'test_{libname}')
+    file_name = f'{bin_file_name}.c'
     with open(file_name, 'w') as filep:
         filep.write(LIBNAME_CODE_DICT[libname])
     compiler = distutils.ccompiler.new_compiler()
@@ -96,9 +96,7 @@ def check_required_library(libname, libraries=None, include_dir=None):
             bin_file_name,
             libraries=libraries,
         )
-    except CompileError:
-        build_success = False
-    except LinkError:
+    except (CompileError, LinkError):
         build_success = False
     finally:
         shutil.rmtree(tmp_dir)
@@ -109,7 +107,7 @@ def check_required_library(libname, libraries=None, include_dir=None):
                "for the compilation of roguehostapd. " + \
                "Please install it and " + \
                "rerun the script (e.g. on Debian-based systems " \
-               "run: apt-get install " 
+               "run: apt-get install "
     if libname == "openssl":
         err_msg += "libssl-dev"
     else:

@@ -202,9 +202,7 @@ class PhishingTemplate(object):
         :rtype: bool
         """
 
-        if self._payload:
-            return True
-        return False
+        return bool(self._payload)
 
     def get_description(self):
         """
@@ -341,24 +339,16 @@ class TemplateManager(object):
         :rtype: tuple
         """
 
-        html = False
         dir_path = os.path.join(self._template_directory, name)
         # check config file...
-        if not "config.ini" in os.listdir(dir_path):
+        if "config.ini" not in os.listdir(dir_path):
             return False, "Configuration file not found in: "
         try:
             tdir = os.listdir(os.path.join(dir_path, constants.SCENARIO_HTML_DIR))
         except OSError:
-            return False, "No " + constants.SCENARIO_HTML_DIR + " directory found in: "
-        # Check HTML files...
-        for tfile in tdir:
-            if tfile.endswith(".html"):
-                html = True
-                break
-        if not html:
-            return False, "No HTML files found in: "
-        # and if we found them all return true and template directory name
-        return True, name
+            return False, f"No {constants.SCENARIO_HTML_DIR} directory found in: "
+        html = any(tfile.endswith(".html") for tfile in tdir)
+        return (True, name) if html else (False, "No HTML files found in: ")
 
     def find_user_templates(self):
         """
@@ -387,7 +377,7 @@ class TemplateManager(object):
                 else:
                     # TODO: We should throw an exception instead here.
                     # but if not then display which problem occurred
-                    print("[" + constants.R + "!" + constants.W + "] " + output + name)
+                    print(f"[{constants.R}!{constants.W}] {output}{name}")
 
         return local_templates
 

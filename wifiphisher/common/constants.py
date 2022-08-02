@@ -7,8 +7,8 @@ import os
 dir_of_executable = os.path.dirname(__file__)
 path_to_project_root = os.path.abspath(
     os.path.join(dir_of_executable, '../../wifiphisher'))
-dir_of_data = path_to_project_root + '/data/'
-phishing_pages_dir = dir_of_data + "phishing-pages/"
+dir_of_data = f'{path_to_project_root}/data/'
+phishing_pages_dir = f"{dir_of_data}phishing-pages/"
 
 # Basic configuration
 DEV = 1
@@ -25,13 +25,13 @@ SSL_PORT = 443
 CHANNEL = 6
 WEBSITE = "https://wifiphisher.org"
 PUBLIC_DNS = "8.8.8.8"
-PEM = dir_of_data + 'cert/server.pem'
+PEM = f'{dir_of_data}cert/server.pem'
 SCENARIO_HTML_DIR = "html/"
-LOGOS_DIR = dir_of_data + "logos/"
-LOCS_DIR = dir_of_data + "locs/"
-MAC_PREFIX_FILE = dir_of_data + "wifiphisher-mac-prefixes"
-URL_TO_OS_FILE = dir_of_data + "wifiphisher-os-initial-requests"
-KNOWN_WLANS_FILE = dir_of_data + "wifiphisher-known-open-wlans"
+LOGOS_DIR = f"{dir_of_data}logos/"
+LOCS_DIR = f"{dir_of_data}locs/"
+MAC_PREFIX_FILE = f"{dir_of_data}wifiphisher-mac-prefixes"
+URL_TO_OS_FILE = f"{dir_of_data}wifiphisher-os-initial-requests"
+KNOWN_WLANS_FILE = f"{dir_of_data}wifiphisher-known-open-wlans"
 POST_VALUE_PREFIX = "wfphshr"
 NETWORK_IP = "10.0.0.0"
 NETWORK_MASK = "255.255.255.0"
@@ -43,10 +43,16 @@ WIFI_IPV6MCAST1 = "33:33:00:"
 WIFI_IPV6MCAST2 = "33:33:ff:"
 WIFI_SPANNINGTREE = "01:80:c2:00:00:00"
 WIFI_MULTICAST = "01:00:5e:"
-NON_CLIENT_ADDRESSES = set([
-    WIFI_BROADCAST, WIFI_INVALID, WIFI_MULTICAST, WIFI_IPV6MCAST1,
-    WIFI_IPV6MCAST2, WIFI_SPANNINGTREE, None
-])
+NON_CLIENT_ADDRESSES = {
+    WIFI_BROADCAST,
+    WIFI_INVALID,
+    WIFI_MULTICAST,
+    WIFI_IPV6MCAST1,
+    WIFI_IPV6MCAST2,
+    WIFI_SPANNINGTREE,
+    None,
+}
+
 DEFAULT_OUI = '00:00:00'
 LINES_OUTPUT = 3
 DN = open(os.devnull, 'w')

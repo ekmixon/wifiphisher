@@ -29,13 +29,27 @@ class TestVictim(unittest.TestCase):
 
         victims_instance = victim.Victims.get_instance()
         self.assertTrue("68:CC:6E:23:44:53" in victims_instance.victims_dic)
-        self.assertTrue("10.0.0.5" == victims_instance.victims_dic["68:CC:6E:23:44:53"].ip_address)
+        self.assertTrue(
+            victims_instance.victims_dic["68:CC:6E:23:44:53"].ip_address
+            == "10.0.0.5"
+        )
+
         self.assertTrue("5C:BA:37:23:44:53" in victims_instance.victims_dic)
-        self.assertTrue("10.0.0.6" == victims_instance.victims_dic["5C:BA:37:23:44:53"].ip_address)
+        self.assertTrue(
+            victims_instance.victims_dic["5C:BA:37:23:44:53"].ip_address
+            == "10.0.0.6"
+        )
+
 
         # Check if the vendors match correctly
-        self.assertTrue("Huawei Technologies" == victims_instance.victims_dic["68:CC:6E:23:44:53"].vendor)
-        self.assertTrue("Microsoft" == victims_instance.victims_dic["5C:BA:37:23:44:53"].vendor)
+        self.assertTrue(
+            victims_instance.victims_dic["68:CC:6E:23:44:53"].vendor
+            == "Huawei Technologies"
+        )
+
+        self.assertTrue(
+            victims_instance.victims_dic["5C:BA:37:23:44:53"].vendor == "Microsoft"
+        )
 
     def test_victim_changed_ipaddr(self):
         """Create and insert a new victim and then change its IP address,"""
@@ -47,7 +61,10 @@ class TestVictim(unittest.TestCase):
         victims_instance = victim.Victims.get_instance()
         existing_victim = victims_instance.victims_dic["5C:BA:37:23:44:53"]
         existing_victim.assign_ip_to_victim("5C:BA:37:23:44:53", "10.0.0.10")
-        self.assertTrue("10.0.0.10" == victims_instance.victims_dic["5C:BA:37:23:44:53"].ip_address)
+        self.assertTrue(
+            victims_instance.victims_dic["5C:BA:37:23:44:53"].ip_address
+            == "10.0.0.10"
+        )
 
     def test_os_of_victims(self):
         """Create three victims, checks os against urls."""
@@ -82,8 +99,13 @@ class TestVictim(unittest.TestCase):
             "http://msftncsi.com/lalala/loulou/sasasas.php")
 
         victims_instance = victim.Victims.get_instance()
-        self.assertTrue("Windows" == victims_instance.victims_dic["5C:BA:37:23:44:53"].os)
-        self.assertTrue("Android" == victims_instance.victims_dic["68:CC:6E:23:44:53"].os)
+        self.assertTrue(
+            victims_instance.victims_dic["5C:BA:37:23:44:53"].os == "Windows"
+        )
+
+        self.assertTrue(
+            victims_instance.victims_dic["68:CC:6E:23:44:53"].os == "Android"
+        )
 
 if __name__ == '__main__':
     unittest.main()

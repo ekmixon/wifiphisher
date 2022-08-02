@@ -48,10 +48,10 @@ class AccessPointFinder(object):
         # type: (str, NetworkManager) -> None
         """Initialize class with all the given arguments."""
         self._interface = ap_interface
-        self.observed_access_points = list()
+        self.observed_access_points = []
         self._capture_file = False
         self._should_continue = True
-        self._hidden_networks = list()
+        self._hidden_networks = []
         self._sniff_packets_thread = Thread(target=self._sniff_packets)
         self._channel_hop_thread = Thread(target=self._channel_hop)
         self._network_manager = network_manager
@@ -198,14 +198,12 @@ class AccessPointFinder(object):
         receiver = packet.addr1
         sender = packet.addr2
 
-        # only continue if both addresses are available
-        if sender and receiver:
-            # find sender and receiver first half of MAC address
-            receiver_identifier = receiver[:8]
-            sender_identifier = sender[:8]
-
-        else:
+        if not sender or not receiver:
             return None
+
+        # find sender and receiver first half of MAC address
+        receiver_identifier = receiver[:8]
+        sender_identifier = sender[:8]
 
         # if a valid address is provided
         if (receiver_identifier,
@@ -249,11 +247,7 @@ def calculate_signal_strength(rssi):
     # type: (int) -> int
     """Calculate the signal strength of access point."""
     signal_strength = 0
-    if rssi >= -50:
-        signal_strength = 100
-    else:
-        signal_strength = 2 * (rssi + 100)
-
+    signal_strength = 100 if rssi >= -50 else 2 * (rssi + 100)
     return signal_strength
 
 
@@ -289,13 +283,8 @@ def find_encryption_type(packet):
             # break down the packet
             elt_section = elt_section.payload
 
-            # check to see if encryption type is either WEP or OPEN
             if not encryption_type:
-                if "privacy" in encryption_info:
-                    encryption_type = "WEP"
-                else:
-                    encryption_type = "OPEN"
-    # Fixes #1146, #1155
+                encryption_type = "WEP" if "privacy" in encryption_info else "OPEN"
     except AttributeError:
         pass
 

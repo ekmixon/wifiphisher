@@ -148,7 +148,7 @@ class CaptivePortalHandler(tornado.web.RequestHandler):
                     logger.info("POST request from %s with %s",
                                 self.request.remote_ip, post_data)
                 if re.search(constants.REGEX_PWD, post_data, re.IGNORECASE) or \
-                   re.search(constants.REGEX_UNAME, post_data, re.IGNORECASE):
+                       re.search(constants.REGEX_UNAME, post_data, re.IGNORECASE):
                     if credential_log_path:
                         with open(credential_log_path, 'a+') as credential_log:
                             credential_log.write("{} {}".format(

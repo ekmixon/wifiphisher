@@ -356,7 +356,7 @@ class NetworkManager(object):
         :rtype: None
         """
 
-        self._name_to_object = dict()
+        self._name_to_object = {}
         self._active = set()
         self._exclude_shutdown = set()
         self._internet_access_enable = False
@@ -439,11 +439,11 @@ class NetworkManager(object):
                 raise InvalidInterfaceError(interface_name)
 
         # add to _exclude_shutdown set if the card is internet adapter
-        if mode == "internet" or mode == "WPS":
+        if mode in ["internet", "WPS"]:
             self._exclude_shutdown.add(interface_name)
         # raise an error if interface doesn't support the mode
         if mode != "internet" and interface_adapter.is_managed_by_nm\
-                and self.internet_access_enable:
+                    and self.internet_access_enable:
                 self.nm_unmanage(interface_name)
         if mode == "monitor" and not interface_adapter.has_monitor_mode:
             raise InvalidInterfaceError(interface_name, mode)
@@ -577,7 +577,7 @@ class NetworkManager(object):
             match will be returned if available
         """
 
-        possible_adapters = list()
+        possible_adapters = []
         for interface, adapter in list(self._name_to_object.items()):
             # check to make sure interface is not active and not already in the possible list
             if (interface not in self._active) and (
@@ -598,9 +598,11 @@ class NetworkManager(object):
         # give priority to those we may have created
         our_vifs = []
         for wlan in self._vifs_add:
-            for adapter in possible_adapters:
-                if wlan.dev == adapter.name:
-                    our_vifs.append(adapter)
+            our_vifs.extend(
+                adapter
+                for adapter in possible_adapters
+                if wlan.dev == adapter.name
+            )
 
         for adapter in our_vifs + possible_adapters:
             if ((not adapter.is_managed_by_nm and self.internet_access_enable)
@@ -684,11 +686,10 @@ class NetworkManager(object):
         while done_flag:
             try:
                 number += 1
-                name = 'wfphshr-wlan' + str(number)
+                name = f'wfphshr-wlan{number}'
                 pyw.down(card)
                 monitor_card = pyw.devadd(card, name, 'monitor')
                 done_flag = False
-            # catch if wlan1 is already exist
             except pyric.error:
                 pass
 
@@ -807,11 +808,10 @@ def is_add_vif_required(main_interface, internet_interface, wpspbc_assoc_interfa
         # excluding the card that used for internet accessing
         # setup basic card information
         score = 0
-        if vif == internet_interface or vif == wpspbc_assoc_interface:
+        if vif in [internet_interface, wpspbc_assoc_interface]:
             continue
-        else:
-            card = pyw.getcard(vif)
-            phy_number = card.phy
+        card = pyw.getcard(vif)
+        phy_number = card.phy
         supported_modes = pyw.devmodes(card)
 
         if "monitor" in supported_modes:
@@ -860,27 +860,14 @@ def is_managed_by_network_manager(interface_name):
         stderr=PIPE)
         out, err = nmcli_process.communicate()
 
-        if err == None and out != "":
+        if err is None and out != "":
             for l in out.splitlines():
                 #TODO: If the device is managed and user has nmcli installed,
                 # we can probably do a "nmcli dev set wlan0 managed no"
-                if interface_name in l:
-                    if "unmanaged" not in l:
-                        is_managed = True
-                else:
-                    # Ignore until we make handle logging registers properly.
-                    pass
-                    #logger.error("Failed to make NetworkManager ignore interface %s", interface_name)
-        else:
-            # Ignore until we make handle logging registers properly.
-            pass
-            #logger.error("Failed to check if interface %s is managed by NetworkManager", interface_name)
-
+                if interface_name in l and "unmanaged" not in l:
+                    is_managed = True
         nmcli_process.stdout.close();
 
-    # NetworkManager service is not running so the devices must be unmanaged
-    # (CalledProcessError)
-    # Or nmcli is not installed...
     except:
         pass
 
@@ -921,9 +908,7 @@ def is_wireless_interface(interface_name):
     :rtype: bool
     """
 
-    if pyw.iswireless(interface_name):
-        return True
-    return False
+    return bool(pyw.iswireless(interface_name))
 
 
 def generate_random_address():
@@ -935,9 +920,9 @@ def generate_random_address():
     .. warning: The first 3 octets are 00:00:00 by default
     """
 
-    mac_address = constants.DEFAULT_OUI + ":{:02x}:{:02x}:{:02x}".format(
-        random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    return mac_address
+    return constants.DEFAULT_OUI + ":{:02x}:{:02x}:{:02x}".format(
+        random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+    )
 
 
 def does_have_mode(interface, mode):
